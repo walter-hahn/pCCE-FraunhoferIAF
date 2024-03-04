@@ -1,0 +1,7 @@
+k_means_constrained==0.7.3
+matplotlib==3.8.0
+mpi4py==3.1.4
+numpy==1.26.3
+ortools==9.7.2996
+pandas==2.2.0
+scipy==1.12.0
