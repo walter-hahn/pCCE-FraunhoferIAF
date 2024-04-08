@@ -92,7 +92,8 @@ def build_lattice(concentration, number_spins, thickness):
         while any(np.array_equal(element[:3], real_position[:3]) for element in all_positions) or np.array_equal(
                 real_position[:3], [0, 0, 0]):
             real_position = generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, list)
-        all_positions.append(real_position)
+        if abs(np.dot(real_position, v1)) < thickness / 2:
+            all_positions.append(real_position)
 
     all_posit = sorted(all_positions, key=euclidean_distance)
     all_pos = all_posit[:number_spins]

@@ -41,11 +41,18 @@ Replace the values as per your requirements. The available arguments are --no_sy
 
 Sample input.py configuration:
 ```bash
-no_systems = 10
-number_atoms = 100
-t_max = 2000
-number_interlaced = 5
-max_size = 20
+max_part_size = 4    
+min_part_size = 4    
+
+number_systems = 1  
+t_max = 500
+number_internal_avg = 20  
+number_spins = 144      
+base_concentrations = [1e-6]
+thickness = 240
+usp_flag = 0  
+gamma_b = 28000 
+r_dipole_weight = 45
 ```
 Ensure input.py is in the same directory as the main script.
 

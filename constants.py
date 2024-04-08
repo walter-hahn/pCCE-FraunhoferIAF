@@ -35,12 +35,13 @@ except ImportError:
 
 # Attempt to import base_concentrations
 try:
-    from input import base_concentrations ,thickness, r_dipole_weight, t_max
+    from input import base_concentrations, thickness, r_dipole_weight, t_max, usp_flag
 except ImportError:
     base_concentrations = [1e-6]  # Default value
     thickness = 240  # Default value
     r_dipole_weight = 45  # Default value
     t_max = 500  # Default value
+    usp_flag = 0
 
 hbar = 6.626 * 10 ** -34 / (2 * math.pi)
 mu0 = 1.257 * 10 ** -6
@@ -49,6 +50,11 @@ gamma_c = 10.705
 Bz = 0.02
 eZ = Bz * gamma_e
 nZ = Bz * gamma_c
+try:
+    from input import gamma_b
+except ImportError:
+    gamma_b = gamma_e
+
 Bx = 0.000001 * 50
 Be = Bx * gamma_e
 D = 2870
@@ -56,6 +62,7 @@ f = (D - eZ)
 w = (D - eZ) * 2 * math.pi
 hfs = 57
 v0 = [0, 0, 1]
+v1 = [1,1,1]/np.linalg.norm([1,1,1])
 # spin matrices
 sigma_z = sp.csr_matrix(np.array([[1, 0], [0, -1]]))
 sigma_z_NV = np.array([[0, 0], [0, -2]])

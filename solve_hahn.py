@@ -60,7 +60,7 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
                 hamiltonian_defect = H_dict[str(position)]
                 for m in range(len(mf_positions)):
                     if not np.any(np.all(mf_positions[m] == rel_positions, axis=1)):
-                        dipole_interaction = compute_interaction(mf_positions[m] - position)
+                        dipole_interaction = compute_interaction_b(mf_positions[m] - position) #new compute interaction
                         matrix = states[str(mf_positions[m])]
                         if matrix[0, 0] == 1:
                             factor = 1
@@ -78,7 +78,7 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
             if d_number2 >= d_number1:
                 if d_number1 == d_number2:
                     # interactions with center
-                    dipole_interaction = compute_interaction(positions[d_number2])
+                    dipole_interaction = compute_interaction_eb(positions[d_number2])
                     ham = []
                     # spin bath interaction
                     for i in range(1):
@@ -102,7 +102,7 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
 
                 else:
                     # bath-bath interactions
-                    dipole_interaction = compute_interaction(positions[d_number2] - positions[d_number1])
+                    dipole_interaction = compute_interaction_b(positions[d_number2] - positions[d_number1])
                     ham = []
 
                     for i in range(3):
@@ -137,14 +137,21 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
     return Cluster_H
 
 
-def compute_interaction(a):
+def compute_interaction_b(a):
     unit_vector = a / np.linalg.norm(a)
-    dot_product = np.dot(v0, unit_vector)
+    dot_product = np.dot(v1, unit_vector)
     angle = np.arccos(dot_product)
-    dipole_interaction = mu0 * (gamma_e * 10 ** 6) ** 2 * math.pi / (np.linalg.norm(a) * 10 ** -9) ** 3 * \
+    dipole_interaction = mu0 * (gamma_b * 10 ** 6) ** 2 * math.pi / (np.linalg.norm(a) * 10 ** -9) ** 3 * \
                          (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
     return dipole_interaction
 
+def compute_interaction_eb(a):
+    unit_vector = a / np.linalg.norm(a)
+    dot_product = np.dot(v1, unit_vector)
+    angle = np.arccos(dot_product)
+    dipole_interaction = mu0 * (gamma_e * 10 ** 6) * (gamma_b * 10 ** 6) * math.pi / (np.linalg.norm(a) * 10 ** -9) ** 3 * \
+                        (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
+    return dipole_interaction
 
 # @profile
 def get_time_propagator(Cluster_H, tau):
