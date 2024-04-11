@@ -1,9 +1,9 @@
 
-# Quantum Spin Simulation at Fraunhofer IAF
+# Partition-based Cluster-Correlation Expansion pCCE
 
-## Project Overview
+This is an implementation of the pCCE method proposed in arXiv:2401.16169 (https://arxiv.org/abs/2401.16169). The main focus is on the calculation of the spin-coherence decay of the NV-center spin in a bath of P1-defect spins. However, the code can be used in a broader context and can be easily extended beyond. 
 
-This project at Fraunhofer IAF, delves into the complex realm of quantum spin dynamics. The primary focus is on the Hahn echo problem, a phenomenon significant in the study of quantum coherence and decoherence in spin systems. Utilizing advanced computational methods, the project simulates the interactions within spin clusters, exploring how these micro-level interactions influence the macroscopic properties of the system. Supervised by Walter Hahn and in collaboration with Philip Schaetzle from the University of Freiburg, the project stands at the forefront of quantum computational research, aiming to deepen our understanding of quantum mechanics and its potential applications in technology.
+
 ## Features
 
 - Creation of Hamiltonian matrices for spin clusters.
@@ -60,7 +60,7 @@ Ensure input.py is in the same directory as the main script.
 This project is a collaborative effort, and contributions are welcome. To participate or inquire, please contact the project team.
 
 ## Acknowledgments
-Special thanks to Walter Hahn and Philip Schaetzle for their invaluable guidance and collaboration in this project.
+We thank Mrunal Divecha for helping with restructuring and optimizing the code. 
 
 ## License
 This project is licensed under the GNU Lesser General Public License v2.1. For more details, see the LICENSE file in the project repository.
