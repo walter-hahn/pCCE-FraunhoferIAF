@@ -41,18 +41,18 @@ Replace the values as per your requirements. The available arguments are --no_sy
 
 Sample input.py configuration:
 ```bash
-max_part_size = 4    
-min_part_size = 4    
+max_part_size = 4    # Maximum partition size    
+min_part_size = 4    # Minimum partition size
 
-number_systems = 1  
-t_max = 500
-number_internal_avg = 20  
-number_spins = 144      
+number_systems = 1      # Number of spin distribution each used core gets to calculate
+t_max = 500    # Maximum time in µs
+number_internal_avg = 20     # Number of averages performed internally (Monte Carlo bath state sampling)
+number_spins = 144    # Number of bath-spins included in the calculation       
 base_concentrations = [1e-6, 2e-6]    # List of concentrations (Fraction of atoms replaced by defects)
-thickness = 240
-usp_flag = 0  
-gamma_b = 28000 
-r_dipole_weight = 45
+thickness = 240    # Restriction on the z-direction. The central spin is assumed, to be at the center of the layer.
+usp_flag = 0    # Set to 1 to simulate P1-centers
+gamma_b = 28000     #Gyromagnetic ratio of the bath spins in MHz/T. Default is for electron spins 
+r_dipole_weight = 45     # Dipole-radius of the bathspins, defining the distance in which dipolar interactions between bath spins are considered significant
 ```
 Ensure input.py is in the same directory as the main script.
 
