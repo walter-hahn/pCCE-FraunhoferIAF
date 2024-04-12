@@ -1,15 +1,16 @@
 
 # Partition-based Cluster-Correlation Expansion pCCE
 
-This is an implementation of the pCCE method proposed in arXiv:2401.16169 (https://arxiv.org/abs/2401.16169). The main focus is on the calculation of the spin-coherence decay of the NV-center spin in a bath of P1-defect spins. However, the code can be used in a broader context and can be easily extended beyond. 
+This is an implementation of the pCCE method proposed in the manuscript arXiv:2401.16169 (https://arxiv.org/abs/2401.16169). The main focus is on the calculation of the spin-coherence decay of the NV-center spin in a bath of P1-defect spins. The code can also be used in a broader context.
 
 
 ## Features
 
-- Creation of Hamiltonian matrices for spin clusters.
-- Time propagation of quantum states.
-- Calculation of probabilities for Hahn echo experiments.
-- Customizable simulation parameters via `constants.py`.
+- Creation of Hamiltonian matrices for spin clusters
+- Time propagation of quantum states
+- Calculation of probabilities for Hahn echo experiments
+- Customizable simulation parameters via `constants.py`
+- Parallelization using MPI
 
 ## Installation
 
@@ -35,24 +36,24 @@ There are two ways to configure simulation parameters:
 ```bash
 python main.py --no_systems 10 --number_atoms 100 --t_max 2000 --number_interlaced 5 --max_size 20
 ```
-Replace the values as per your requirements. The available arguments are --no_systems, --number_atoms, --t_max, --number_interlaced, and --max_size.
+The available arguments are --no_systems, --number_atoms, --t_max, --number_interlaced, and --max_size.
 
 2. **Modifying input.py**: For more persistent changes, you can modify the input.py file with your desired parameters. This file overrides the default settings specified in constants.py. If input.py does not exist, the simulation will fall back to using the default values.
 
 Sample input.py configuration:
 ```bash
-max_part_size = 4    # Maximum partition size    
-min_part_size = 4    # Minimum partition size
+max_part_size = 4                     # Maximum partition size    
+min_part_size = 4                     # Minimum partition size
 
-number_systems = 1                    # Number of spin distribution each used core gets to calculate
+number_systems = 1                    # Number of systems considered. Each system corresponds to a random spatial distribution of spins. MPI parallelization distributes theses systems among available cores.
 t_max = 500                           # Maximum time in µs
 number_internal_avg = 20              # Number of averages performed internally (Monte Carlo bath state sampling)
-number_spins = 144                    # Number of bath-spins included in the calculation       
+number_spins = 144                    # Total number of bath-spins included in the calculation       
 base_concentrations = [1e-6, 2e-6]    # List of concentrations (Fraction of atoms replaced by defects)
-thickness = 240                       # Restriction on the z-direction. The central spin is assumed, to be at the center of the layer.
-usp_flag = 0                          # Set to 1 to simulate P1-centers
-gamma_b = 28000                       #Gyromagnetic ratio of the bath spins in MHz/T. Default is for electron spins 
-r_dipole_weight = 45                  # Dipole-radius of the bathspins, defining the distance in which dipolar interactions between bath spins are considered significant
+thickness = 240                       # Diamond-layer thickness along the z-direction in nm. The central spin is positioned at the center of the layer.
+usp_flag = 0                          # Set usp_flag=1 to simulate P1-centers, usp_flag=0 to simulate electron spins in the bath.
+gamma_b = 28000                       # Gyromagnetic ratio of the bath spins in MHz/T. Default is for electron spins.
+r_dipole_weight = 45                  # Dipole-radius of the bathspins defining the distance in which dipolar interactions between bath spins are considered.
 ```
 Ensure input.py is in the same directory as the main script.
 
