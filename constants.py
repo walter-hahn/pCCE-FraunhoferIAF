@@ -35,13 +35,14 @@ except ImportError:
 
 # Attempt to import base_concentrations
 try:
-    from input import base_concentrations, thickness, r_dipole_weight, t_max, usp_flag
+    from input import base_concentrations, thickness, r_dipole, t_max, hf_for_P1, time_step
 except ImportError:
     base_concentrations = [1e-6]  # Default value
     thickness = 240  # Default value
-    r_dipole_weight = 45  # Default value
+    r_dipole = 45  # Default value
     t_max = 500  # Default value
-    usp_flag = 0
+    hf_for_P1 = 0
+    time_step = 40
 
 hbar = 6.626 * 10 ** -34 / (2 * math.pi)
 mu0 = 1.257 * 10 ** -6
@@ -54,6 +55,10 @@ try:
     from input import gamma_b
 except ImportError:
     gamma_b = gamma_e
+
+if hf_for_P1 and gamma_b != 28000:
+    print("Warning!! Flag hf_for_P1 is set. Setting gamma_b = 28000")
+    gamma_b = 28000
 
 Bx = 0.000001 * 50
 Be = Bx * gamma_e

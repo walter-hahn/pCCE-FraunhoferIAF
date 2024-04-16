@@ -1,15 +1,10 @@
-# import matplotlib.pyplot as plt
 import random
-import time
-
 from constants import *
 import numpy as np
 from scipy.sparse import csr_matrix, csc_matrix
 from scipy.sparse import linalg as spl
-# import pickle
 
 
-# @profile
 def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_dict):
     """
     Generates the Hamiltonian for a given cluster within a spin system.
@@ -36,7 +31,13 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
     The Hamiltonian is computed as a sparse matrix for efficiency, especially useful for large systems.
     """
     positions = clusters[cluster_number]
-    p = [i for i in range(len(positions))]
+    size = len(positions)
+    p = [i for i in range(size)]
+    # p = []
+    # i = 0
+    # for position in positions:
+    #     p.append(i)
+    #     i = i + 1
     element = tuple(p)
     size = len(element)
 
@@ -145,6 +146,7 @@ def compute_interaction_b(a):
                          (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
     return dipole_interaction
 
+
 def compute_interaction_eb(a):
     unit_vector = a / np.linalg.norm(a)
     dot_product = np.dot(v1, unit_vector)
@@ -153,7 +155,7 @@ def compute_interaction_eb(a):
                         (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
     return dipole_interaction
 
-# @profile
+
 def get_time_propagator(Cluster_H, tau):
     # Convert Cluster_H to CSC format for efficiency
     Cluster_H_csc = csc_matrix(Cluster_H)
@@ -166,7 +168,6 @@ def get_time_propagator(Cluster_H, tau):
 
     return matrix_exp_csr
 
-# @profile
 
 def time_propagation(matrix_exp, psi0):
     """
@@ -183,7 +184,6 @@ def time_propagation(matrix_exp, psi0):
     return psi_tau
 
 
-# @profile
 def get_probabilities(matrix_exp_step, positions, magx, num_states, testing=0):
     """
     Calculates the average probability of quantum state evolution under a given matrix.
@@ -240,7 +240,6 @@ def get_probabilities(matrix_exp_step, positions, magx, num_states, testing=0):
     return np.mean(prob)
 
 
-# @profile
 def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict, test=0):
     """
         Solves the Hahn echo problem for a system of spins.

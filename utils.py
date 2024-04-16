@@ -1,20 +1,6 @@
 import random
-import matplotlib.pyplot as plt
 from k_means_constrained import KMeansConstrained
 from constants import *
-
-
-def euclidean_distance(v):
-    """
-        Calculates the Euclidean distance of a vector from the origin.
-
-        Parameters:
-        v (array_like): A vector for which the Euclidean distance is calculated.
-
-        Returns:
-        float: The Euclidean distance of the vector from the origin.
-    """
-    return np.linalg.norm(v)
 
 
 def generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, choice_list):
@@ -39,7 +25,7 @@ def generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3
     return position_vector / 40 * 3.567
 
 
-def build_lattice(concentration, number_spins, thickness):
+def build_lattice(concentration, number_spins, thickness, r_dipole):
     """
         Constructs a lattice of spins based on specified parameters.
 
@@ -70,11 +56,10 @@ def build_lattice(concentration, number_spins, thickness):
     var3 = np.array([0, 0, 4])
     list = (b1, b2, b3, b4, b5, b6, b7, b8)
 
-    r_dipole = 45 * ((1 * 10 ** -6) / concentration) ** (1 / 3) * 3 ** (1 / 3)
     if thickness < (2 * r_dipole):
         r_dipole = r_dipole * (2 * r_dipole / thickness) ** (1 / 2)
-
-    # Removed some redundant calculations and print statements
+        print("Warning!! r_dipole as been modified w.r.t the thickness")
+        print("r_dipole = " + r_dipole)
 
     # create random lattice sites
 
@@ -95,19 +80,23 @@ def build_lattice(concentration, number_spins, thickness):
         if abs(np.dot(real_position, v1)) < thickness / 2:
             all_positions.append(real_position)
 
-    all_posit = sorted(all_positions, key=euclidean_distance)
+    all_posit = sorted(all_positions, key=np.linalg.norm)
     all_pos = all_posit[:number_spins]
     last_atom = len(all_pos) + 1
+    if hf_for_P1:
+        choices = [0, 1, 2, 3, 4]
+        decisions = random.choices(choices, weights=(1 / 3, 1 / 4, 1 / 4, 1 / 12, 1 / 12), k=len(all_pos))
+        assignment = [[] for _ in range(5)]
+    else:
+        choices = [0]
+        decisions = random.choices(choices, k=len(all_pos))
+        assignment = [[] for _ in range(1)]
 
-    choices = [0, 1, 2, 3, 4]
-    decisions = random.choices(choices, weights=(1 / 3, 1 / 4, 1 / 4, 1 / 12, 1 / 12), k=len(all_pos))
-
-    assignment = [[] for _ in range(5)]
     for i, decision in enumerate(decisions):
         assignment[decision].append(all_pos[i])
 
     for assign_list in assignment:
-        missing_atoms = 4 - len(assign_list) % 4
+        missing_atoms = max_size - len(assign_list) % max_size
         for _ in range(missing_atoms):
             assign_list.append(all_posit[last_atom])
             last_atom += 1
@@ -118,10 +107,10 @@ def build_lattice(concentration, number_spins, thickness):
     mf_positions = [pos for pos in all_posit if np.linalg.norm(pos) < max_dist + r_dipole * (2 / 3)]
     mf_positions = np.stack(mf_positions, axis=0)
 
-    return (assignment, mf_positions)
+    return assignment, mf_positions
 
 
-def get_constrained_clusters(positions, n_clusters):
+def get_constrained_clusters(positions, n_partitions):
     """
         Groups positions into a specified number of clusters with constraints.
 
@@ -130,87 +119,75 @@ def get_constrained_clusters(positions, n_clusters):
 
         Parameters:
         positions (array_like): An array of positions to be clustered.
-        n_clusters (int): The number of clusters to form.
+        n_partitions (int): The number of clusters to form.
 
         Returns:
         tuple: A tuple containing the labels for each position and the cluster centers.
         """
     clf = KMeansConstrained(
-        n_clusters=n_clusters,
+        n_clusters=n_partitions,
         size_min=min_size,
         size_max=max_size,
-
         random_state=0
     )
     clf.fit_predict(positions)
 
     return clf.labels_, clf.cluster_centers_
 
-# @profile
-def constrained_clustering(all_positions, n_clusters, r_dipole):
-    """
-        Performs constrained clustering on a set of positions.
 
-        This function applies a clustering algorithm to group positions into clusters
-        based on their proximity and a specified dipole radius. It also handles joining
-        and splitting of clusters based on distance criteria.
-
-        Parameters:
-        all_positions (array_like): An array of all positions to be clustered.
-        n_clusters (int): The number of clusters to create.
-        r_dipole (float): The radius within which dipoles interact.
-
-        Returns:
-        tuple: A tuple containing the formed clusters and the number of large clusters.
-        """
-    a, centers = get_constrained_clusters(all_positions, n_clusters)
+def constrained_clustering(all_positions, n_partitions, r_dipole):
+    a, centers = get_constrained_clusters(all_positions, n_partitions)
     print(a)
-
-    # Sort position vectors
+    # sort position vectors
     temp = []
     exact_clusters = {}
+
     for i in range(len(centers)):
         for j in range(len(all_positions)):
+
             if a[j] == i:
                 temp.append(all_positions[j])
-        if temp:  # Check if temp is not empty
-            temp = np.stack(temp, axis=0)
-            exact_clusters[i] = temp
+        temp = np.stack(temp, axis=0)
+        exact_clusters[i] = temp
         temp = []
 
     joined_clusters = []
     half_clusters = []
-    k = 0
-    num_large_clusters = 0
 
-    cluster_keys = list(exact_clusters.keys())
-    for idx_i, i in enumerate(cluster_keys):
-        for idx_j, j in enumerate(cluster_keys):
-            if idx_j > idx_i:
+    num_multiply_clusters = 0
+
+    subclusters = list(exact_clusters.values())
+    for i in range(len(subclusters)):
+        for j in range(len(subclusters)):
+            if j > i:
                 if i != j:
                     if np.linalg.norm(centers[i] - centers[j]) < r_dipole:
-                        arr = exact_clusters[i]
-                        arr1 = exact_clusters[j]
+                        # until here nothing changed
+                        arr = subclusters[i]
+                        arr1 = subclusters[j]
                         con = np.concatenate((arr, arr1))
                         joined_clusters.append(con)
-                        num_large_clusters += 1
-                        if i != k:
-                            half_clusters.append(arr)
-                        else:
-                            k = k + 1
-                        if not (i == 0 and j == len(cluster_keys) - 1):
-                            half_clusters.append(arr1)
+                        half_clusters.append(arr)
+                        half_clusters.append(arr1)
+    clusters = {}
+    i = 0
 
-    clusters = {idx: cluster for idx, cluster in enumerate(joined_clusters)}
+    for joined_cluster in joined_clusters:
+        clusters[i] = joined_cluster
+        i = i + 1
+        num_multiply_clusters = num_multiply_clusters + 1
 
-    if len(exact_clusters) == 1:
-        clusters[len(clusters)] = list(exact_clusters.values())[0]
-        num_large_clusters += 1
+    for subcluster in subclusters:
+        clusters[i] = subcluster
+        i = i + 1
+        num_multiply_clusters = num_multiply_clusters + 1
 
-    clusters.update({len(clusters) + idx: cluster for idx, cluster in enumerate(half_clusters)})
+    for half_cluster in half_clusters:
+        clusters[i] = half_cluster
+        i = i + 1
 
-    print(len(clusters))
-    return clusters, num_large_clusters
+    return clusters, num_multiply_clusters
+
 
 # @profile
 def mf_bath(all_positions, mf_positions):
@@ -243,7 +220,8 @@ def mf_bath(all_positions, mf_positions):
     # Create H_dict
     H_dict = {str(pos): H_defect for pos in all_positions}  # +random.choice(level_shift)*sigma_z*1/2
 
-    return (states, H_center, H_dict)
+    return states, H_center, H_dict
+
 
 # @profile
 def get_time_prob(all_probs, num_large_clusters, t_max):
@@ -261,7 +239,7 @@ def get_time_prob(all_probs, num_large_clusters, t_max):
         Returns:
         array_like: A 2D array with time and corresponding probabilities.
         """
-    t_range = np.linspace((2 * t_max / 40), t_max, 39)
+    t_range = np.linspace((2 * t_max / time_step), t_max, time_step - 1)
     probabilities = []
 
     # Vectorized approach to calculate probabilities
@@ -274,13 +252,5 @@ def get_time_prob(all_probs, num_large_clusters, t_max):
         probabilities.append(prod_first_elements * prod_other_elements)
 
     time_prob = np.column_stack((t_range, probabilities))
-
-    # fig = plt.figure(figsize=(10, 10))
-    # ay = fig.add_subplot()
-    # x1, y1 = time_prob.T
-    # ay.set_xlabel('t / µs', size=20)
-    # ay.set_ylabel('Coherence ', size=20)
-    # ay.scatter(x1, y1, label="Bz = {} T".format(Bz))
-    # ay.plot(x1, y1)
 
     return time_prob
