@@ -59,7 +59,7 @@ def build_lattice(concentration, number_spins, thickness, r_dipole):
     if thickness < (2 * r_dipole):
         r_dipole = r_dipole * (2 * r_dipole / thickness) ** (1 / 2)
         print("Warning!! r_dipole as been modified w.r.t the thickness")
-        print("r_dipole = " + r_dipole)
+        print("r_dipole = " + str(r_dipole))
 
     # create random lattice sites
 

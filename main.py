@@ -145,6 +145,6 @@ if __name__ == '__main__':
     plt.plot(mean_result[:, 0], mean_result[:, 1], marker='o', linestyle='-')
     plt.title('Plot of Mean Result')
     plt.savefig('mean_result_plot.png')
-    plt.xlabel('time $2\\tau$ (microseconds)')  # using LaTeX for subscript and special characters
+    plt.xlabel('time $2\\tau$ (μs)')  # using LaTeX for subscript and special characters
     plt.ylabel('$M_x$')  # using LaTeX for subscript
     plt.show()

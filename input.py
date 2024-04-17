@@ -10,7 +10,7 @@ number_internal_avg = 20              # Number of averages performed internally 
 number_spins = 144                    # Total number of bath-spins included in the calculation
 base_concentrations = [1e-6, 2e-6]    # List of concentrations (Fraction of atoms replaced by defects)
 thickness = 240                       # Diamond-layer thickness along the z-direction in nm. The central spin is positioned at the center of the layer.
-usp_flag = 0                          # Set usp_flag=1 to simulate P1-centers, usp_flag=0 to simulate electron spins in the bath.
+hf_for_P1 = 0                         # Set usp_flag=1 to simulate P1-centers, usp_flag=0 to simulate electron spins in the bath.
 gamma_b = 28000                       # Gyromagnetic ratio of the bath spins in MHz/T. Default is for electron spins.
 r_dipole = 45                         # Dipole-radius of the bathspins defining the distance in which dipolar interactions between bath spins are considered.
 time_step = 10
