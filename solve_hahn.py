@@ -141,18 +141,16 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
 def compute_interaction_b(a):
     unit_vector = a / np.linalg.norm(a)
     dot_product = np.dot(v1, unit_vector)
-    angle = np.arccos(dot_product)
     dipole_interaction = mu0 * (gamma_b * 10 ** 6) ** 2 * math.pi / (np.linalg.norm(a) * 10 ** -9) ** 3 * \
-                         (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
+                         (1 - 3 * dot_product ** 2) * 10 ** -6 * hbar
     return dipole_interaction
 
 
 def compute_interaction_eb(a):
     unit_vector = a / np.linalg.norm(a)
     dot_product = np.dot(v1, unit_vector)
-    angle = np.arccos(dot_product)
     dipole_interaction = mu0 * (gamma_e * 10 ** 6) * (gamma_b * 10 ** 6) * math.pi / (np.linalg.norm(a) * 10 ** -9) ** 3 * \
-                        (1 - 3 * np.cos(angle) ** 2) * 10 ** -6 * hbar
+                        (1 - 3 * dot_product ** 2) * 10 ** -6 * hbar
     return dipole_interaction
 
 

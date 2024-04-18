@@ -139,12 +139,12 @@ if __name__ == '__main__':
                 P1_list_1.append(combined_result)
         # Compute the average of the results across all entries in P1_list_1
         mean_result = np.average(P1_list_1, axis=0)
-    save_avg_result_data(mean_result)
-    save_result_data(P1_list_1, concentration, thickness)
-    plt.figure(figsize=(10, 5))
-    plt.plot(mean_result[:, 0], mean_result[:, 1], marker='o', linestyle='-')
-    plt.title('Plot of Mean Result')
-    plt.savefig('mean_result_plot.png')
-    plt.xlabel('time $2\\tau$ (μs)')  # using LaTeX for subscript and special characters
-    plt.ylabel('$M_x$')  # using LaTeX for subscript
-    plt.show()
+        save_avg_result_data(mean_result)
+        save_result_data(P1_list_1, concentration, thickness)
+        plt.figure(figsize=(10, 5))
+        plt.plot(mean_result[:, 0], mean_result[:, 1], marker='o', linestyle='-')
+        plt.title('Plot of Mean Result')
+        plt.savefig('mean_result_plot.png')
+        plt.xlabel('time $2\\tau$ (μs)')  # using LaTeX for subscript and special characters
+        plt.ylabel('$M_x$')  # using LaTeX for subscript
+        plt.show()
