@@ -89,6 +89,9 @@ This project is a collaborative effort, and contributions are welcome. To partic
 ## Acknowledgments
 We thank Mrunal Divecha for helping with restructuring and optimizing the code. 
 
+## Caution
+The code is under continuous development and, hence, comes without guarantee.
+
 ## License
 This project is licensed under the GNU Lesser General Public License v2.1. For more details, see the LICENSE file in the project repository.
 
