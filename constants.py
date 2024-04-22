@@ -3,44 +3,19 @@ import math
 from scipy import sparse as sp
 
 # Attempt to load custom settings from input.py if it exists
-# Attempt to import max_size
 try:
-    from input import max_part_size as max_size
+    from input import concentration, thickness, r_dipole, t_max, hf_for_P1, time_step, max_part_size, min_part_size, \
+        number_systems, number_internal_avg, number_spins
 except ImportError:
-    max_size = 4  # Default value
-
-# Attempt to import min_size
-try:
-    from input import min_part_size as min_size
-except ImportError:
-    min_size = 4  # Default value
-
-# Attempt to import no_systems
-try:
-    from input import number_systems as no_systems
-except ImportError:
-    no_systems = 1  # Default value
-
-# Attempt to import number_interlaced
-try:
-    from input import number_internal_avg as number_interlaced
-except ImportError:
-    number_interlaced = 20  # Default value
-
-# Attempt to import number_atoms
-try:
-    from input import number_spins as number_atoms
-except ImportError:
-    number_atoms = 144  # Default value
-
-# Attempt to import base_concentrations
-try:
-    from input import base_concentrations, thickness, r_dipole, t_max, hf_for_P1, time_step
-except ImportError:
-    base_concentrations = [1e-6]  # Default value
-    thickness = 240  # Default value
-    r_dipole = 45  # Default value
-    t_max = 500  # Default value
+    max_part_size = 4
+    min_part_size = 4
+    number_systems = 1
+    number_internal_avg = 20
+    number_spins = 144
+    concentration = 1e-6
+    thickness = 240
+    r_dipole = 45
+    t_max = 500
     hf_for_P1 = 0
     time_step = 40
 

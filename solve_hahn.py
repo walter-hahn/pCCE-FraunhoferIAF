@@ -261,9 +261,9 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
     mag_x = magx_base.copy()
     mag_2x = magx_base.copy()
 
-    for _ in range(max_size):
+    for _ in range(max_part_size):
         mag_x = sp.kron(mag_x, identity, format='csr')
-    for _ in range(max_size * 2):
+    for _ in range(max_part_size * 2):
         mag_2x = sp.kron(mag_2x, identity, format='csr')
     n_clusters = len(clusters)
     per = 0.1
@@ -277,9 +277,9 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
 
         positions = clusters[cluster_number]
 
-        if len(positions) == max_size:
+        if len(positions) == max_part_size:
             magx = mag_x
-        elif len(positions) == (max_size * 2):
+        elif len(positions) == (max_part_size * 2):
             magx = mag_2x
         else:
             # print("generating new magx")
@@ -288,7 +288,7 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
                 magx = sp.kron(magx, identity, format='csr')
 
         current_step = -1
-        num_states = 10 if Cluster_H.shape[1] > (2 ** (1 + max_size) + 2) else 32
+        num_states = 10 if Cluster_H.shape[1] > (2 ** (1 + max_part_size) + 2) else 32
         for t in np.linspace(t_step * 2, t_max, n_steps - 1):
             current_step += 1
             matrix_exp_step = matrix_exp_step.dot(matrix_exp)

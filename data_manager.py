@@ -30,7 +30,7 @@ def save_result_data(data, concentration, thickness, folder_path='pickleFiles', 
     # Create the file name with time stamp
     timestr = time.strftime("%Y%m%d")
     if mode == "regular":
-        file_name = "P1_{}_{}_{}.pkl".format(concentration, thickness, timestr)
+        file_name = "all_results_{}_{}_{}.pkl".format(concentration, thickness, timestr)
     elif mode == "avg":
         file_name = "averaged_{}_{}_{}.pkl".format(concentration, thickness, timestr)
     else:

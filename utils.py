@@ -54,7 +54,7 @@ def build_lattice(concentration, number_spins, thickness, r_dipole):
     var1 = np.array([4, 0, 0])
     var2 = np.array([0, 4, 0])
     var3 = np.array([0, 0, 4])
-    list = (b1, b2, b3, b4, b5, b6, b7, b8)
+    base_list = (b1, b2, b3, b4, b5, b6, b7, b8)
 
     if thickness < (2 * r_dipole):
         r_dipole = r_dipole * (2 * r_dipole / thickness) ** (1 / 2)
@@ -73,10 +73,10 @@ def build_lattice(concentration, number_spins, thickness, r_dipole):
 
     all_positions = []
     for _ in range(number_N):
-        real_position = generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, list)
+        real_position = generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, base_list)
         while any(np.array_equal(element[:3], real_position[:3]) for element in all_positions) or np.array_equal(
                 real_position[:3], [0, 0, 0]):
-            real_position = generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, list)
+            real_position = generate_position(iterations_x, iterations_y, iterations_z, var1, var2, var3, base_list)
         if abs(np.dot(real_position, v1)) < thickness / 2:
             all_positions.append(real_position)
 
@@ -96,7 +96,7 @@ def build_lattice(concentration, number_spins, thickness, r_dipole):
         assignment[decision].append(all_pos[i])
 
     for assign_list in assignment:
-        missing_atoms = max_size - len(assign_list) % max_size
+        missing_atoms = max_part_size - len(assign_list) % max_part_size
         for _ in range(missing_atoms):
             assign_list.append(all_posit[last_atom])
             last_atom += 1
@@ -126,8 +126,8 @@ def get_constrained_clusters(positions, n_partitions):
         """
     clf = KMeansConstrained(
         n_clusters=n_partitions,
-        size_min=min_size,
-        size_max=max_size,
+        size_min=min_part_size,
+        size_max=max_part_size,
         random_state=0
     )
     clf.fit_predict(positions)
@@ -162,13 +162,13 @@ def constrained_clustering(all_positions, n_partitions, r_dipole):
             if j > i:
                 if i != j:
                     if np.linalg.norm(centers[i] - centers[j]) < r_dipole:
-                        # until here nothing changed
-                        arr = subclusters[i]
-                        arr1 = subclusters[j]
-                        con = np.concatenate((arr, arr1))
+                        # Merge clusters if they are closer than the dipole radius
+                        cluster_1 = subclusters[i]
+                        cluster_2 = subclusters[j]
+                        con = np.concatenate((cluster_1, cluster_2))
                         joined_clusters.append(con)
-                        half_clusters.append(arr)
-                        half_clusters.append(arr1)
+                        half_clusters.append(cluster_1)
+                        half_clusters.append(cluster_2)
     clusters = {}
     i = 0
 
@@ -189,7 +189,6 @@ def constrained_clustering(all_positions, n_partitions, r_dipole):
     return clusters, num_multiply_clusters
 
 
-# @profile
 def mf_bath(all_positions, mf_positions):
     """
         Generates a magnetic field bath based on given positions.
@@ -223,7 +222,6 @@ def mf_bath(all_positions, mf_positions):
     return states, H_center, H_dict
 
 
-# @profile
 def get_time_prob(all_probs, num_large_clusters, t_max):
     """
         Calculates time-dependent probabilities for a system with multiple clusters.
