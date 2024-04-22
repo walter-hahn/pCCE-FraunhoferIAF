@@ -67,7 +67,7 @@ f = (D - eZ)
 w = (D - eZ) * 2 * math.pi
 hfs = 57
 v0 = [0, 0, 1]
-v1 = [1,1,1]/np.linalg.norm([1,1,1])
+v1 = [1, 1, 1]/np.linalg.norm([1, 1, 1])
 # spin matrices
 sigma_z = sp.csr_matrix(np.array([[1, 0], [0, -1]]))
 sigma_z_NV = np.array([[0, 0], [0, -2]])

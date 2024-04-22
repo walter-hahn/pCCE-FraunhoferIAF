@@ -3,7 +3,7 @@ import argparse
 from mpi4py import MPI
 from utils import build_lattice, constrained_clustering, mf_bath, get_time_prob
 from solve_hahn import solve_hahn
-from data_manager import save_result_data, save_avg_result_data, load_data
+from data_manager import save_result_data
 from constants import *
 import matplotlib.pyplot as plt
 import sys
@@ -41,23 +41,26 @@ args = get_command_line_args()
 # Override values with command-line arguments This is redundant if defaults are set in the parser, as argparse will
 # use the default value if not specified by the user
 if args.info:
-    print("There are two ways to provide inputs for the simulation:\n"
-          "1. Command-Line Arguments: Directly pass parameters when running the script.\n"
-          "   Example: python main.py --no_systems 10 --number_atoms 100\n"
-          "2. Modifying input.py: Create or modify input.py with your desired parameters.\n"
-          "   This file should define variables like no_systems, number_atoms, etc.")
-    sys.exit(0)
-no_systems = args.no_systems
-number_atoms = args.number_atoms
-t_max = args.t_max
-number_interlaced = args.number_interlaced
-max_size = args.max_size
-min_size = args.min_size
-base_concentrations = args.base_concentrations
-thickness = args.thickness
-r_dipole = args.r_dipole
-gamma_b = args.gamma_b
-hf_for_P1 = args.hf_for_P1
+    print("Simulation Parameters:")
+    print("  --max_size: Maximum cluster size (default: {})".format(max_size))
+    print("  --min_size: Minimum cluster size (default: {})".format(min_size))
+    print("  --no_systems: Number of systems (default: {})".format(no_systems))
+    print("  --t_max: Maximum time for simulation (default: {})".format(t_max))
+    print("  --number_atoms: Number of atoms in a system (default: {})".format(number_atoms))
+    print("  --number_interlaced: Number of interlaced simulations (default: {})".format(number_interlaced))
+    print("  --base_concentrations: Base concentrations (default: {})".format(base_concentrations))
+    print("  --thickness: Layer thickness of the spin distribution (default: {})".format(thickness))
+    print("  --r_dipole: Dipole weight (default: {})".format(r_dipole))
+    print("  --time_step: Time step(ms) (default: {})".format(time_step))
+    print("  --gamma_b: Gamma B (default: {})".format(gamma_b))
+    print("  --hf_for_P1: Flag to change spin bath from Electron spins to P1 centres (default: {})".format(hf_for_P1))
+    print("\nTo run the simulation, use the following command:")
+    print("  python main.py [options]")
+    print("\nFor example:")
+    print("  python main.py --no_systems 10 --number_atoms 100\n")
+    sys.exit()
+for key, value in vars(args).items():
+    globals()[key] = value
 
 # Ensure this script runs only as the main program
 if __name__ == '__main__':
@@ -96,7 +99,6 @@ if __name__ == '__main__':
                 all_all_probs = np.zeros_like(all_positions)  # Initialize probability array
 
                 for j in range(number_interlaced):
-
                     # Generate magnetic field and Hamiltonian for the system
                     states, H_center, H_dict = mf_bath(all_positions, mf_positions)  # system is always 0
                     # Solve the Hahn echo problem
@@ -113,38 +115,39 @@ if __name__ == '__main__':
                 single_prob = get_time_prob(final_all_probs, num_large_clusters, t_max)  # Extract single probability
                 final_time_prob.append(single_prob)  # Collect probabilities for all systems
             results.append(final_time_prob.copy())  # Collect results for all concentrations
+            print(f"System {i+1}/{no_systems} has finished")
 
         rslts_list = comm.gather(results, root=0)  # Gather results across MPI nodes
-
-    # End timing and print elapsed time
-    end_main = time.time()
-    print("Time elapsed:", end_main - start_main)
-    if rank == 0:
-        P1_list_1 = []
-        for element in rslts_list:
-            for elem in element:
-                combined_result = []
-                if hf_for_P1:
-                    # Compute product of results from multiple systems
-                    sys_list = [elem[i] for i in range(5)]  # Get systems from 0 to 4
-                    for i in range(len(sys_list[0])):
-                        result = np.prod([sys[i, 1] for sys in sys_list])  # Using numpy product for elegance and speed
-                        combined_result.append([sys_list[0][i, 0], result])
-                else:
-                    # Use only the first system's results
-                    sys0 = elem[0]
-                    for i in range(len(sys0)):
-                        result = sys0[i, 1]
-                        combined_result.append([sys0[i, 0], result])
-                P1_list_1.append(combined_result)
-        # Compute the average of the results across all entries in P1_list_1
-        mean_result = np.average(P1_list_1, axis=0)
-        save_avg_result_data(mean_result)
-        save_result_data(P1_list_1, concentration, thickness)
-        plt.figure(figsize=(10, 5))
-        plt.plot(mean_result[:, 0], mean_result[:, 1], marker='o', linestyle='-')
-        plt.title('Plot of Mean Result')
-        plt.savefig('mean_result_plot.png')
-        plt.xlabel('time $2\\tau$ (μs)')  # using LaTeX for subscript and special characters
-        plt.ylabel('$M_x$')  # using LaTeX for subscript
-        plt.show()
+        # End timing and print elapsed time
+        end_main = time.time()
+        print("Time elapsed:", end_main - start_main)
+        if rank == 0:
+            P1_list_1 = []
+            for element in rslts_list:
+                for elem in element:
+                    combined_result = []
+                    if hf_for_P1:
+                        # Compute product of results from multiple systems
+                        sys_list = [elem[i] for i in range(5)]  # Get systems from 0 to 4
+                        for i in range(len(sys_list[0])):
+                            result = np.prod([sys[i, 1] for sys in sys_list])  # Using numpy product for elegance and speed
+                            combined_result.append([sys_list[0][i, 0], result])
+                    else:
+                        # Use only the first system's results
+                        sys0 = elem[0]
+                        for i in range(len(sys0)):
+                            result = sys0[i, 1]
+                            combined_result.append([sys0[i, 0], result])
+                    P1_list_1.append(combined_result)
+            # Compute the average of the results across all entries in P1_list_1
+            mean_result = np.average(P1_list_1, axis=0)
+            save_result_data(mean_result, concentration, thickness, mode='avg')
+            save_result_data(P1_list_1, concentration, thickness)
+            plt.figure(figsize=(10, 5))
+            plt.plot(mean_result[:, 0], mean_result[:, 1], marker='o', linestyle='-')
+            plt.title('Plot of Mean Result')
+            plt.savefig('mean_result_plot.png')
+            plt.xlabel('time $2\\tau$ (μs)')  # using LaTeX for subscript and special characters
+            plt.ylabel('$M_x$')  # using LaTeX for subscript
+            plt.show()
+    print("......Stopping simulation")

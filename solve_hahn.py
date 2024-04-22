@@ -3,6 +3,9 @@ from constants import *
 import numpy as np
 from scipy.sparse import csr_matrix, csc_matrix
 from scipy.sparse import linalg as spl
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
 
 
 def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_dict):
@@ -32,15 +35,7 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
     """
     positions = clusters[cluster_number]
     size = len(positions)
-    p = [i for i in range(size)]
-    # p = []
-    # i = 0
-    # for position in positions:
-    #     p.append(i)
-    #     i = i + 1
-    element = tuple(p)
-    size = len(element)
-
+    element = tuple(range(size))
     # result = H_center
     result = csr_matrix(H_center)
     rel_positions = [positions[num] for num in element]
@@ -61,12 +56,9 @@ def get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_
                 hamiltonian_defect = H_dict[str(position)]
                 for m in range(len(mf_positions)):
                     if not np.any(np.all(mf_positions[m] == rel_positions, axis=1)):
-                        dipole_interaction = compute_interaction_b(mf_positions[m] - position) #new compute interaction
+                        dipole_interaction = compute_interaction_b(mf_positions[m] - position)
                         matrix = states[str(mf_positions[m])]
-                        if matrix[0, 0] == 1:
-                            factor = 1
-                        else:
-                            factor = -1
+                        factor = 1 if matrix[0, 0] == 1 else -1
                         hamiltonian_defect = hamiltonian_defect + sigma_z * dipole_interaction * factor / 4
                 hamiltonian_defect = csr_matrix(hamiltonian_defect)
                 result = sp.kron(result, hamiltonian_defect, format='csr')
@@ -230,7 +222,7 @@ def get_probabilities(matrix_exp_step, positions, magx, num_states, testing=0):
     psi_x = exp_x_positions @ psi_tau
     psi_two_tau = matrix_exp_step @ psi_x
 
-    prob1 = np.real(np.einsum('ij,ji->i', psi_two_tau.T.conj(), magx @ psi_two_tau)) #check values on this line
+    prob1 = np.real(np.einsum('ij,ji->i', psi_two_tau.T.conj(), magx @ psi_two_tau))  # check values on this line
     prob2 = 0.5
 
     prob = prob1 / prob2
@@ -273,8 +265,9 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
         mag_x = sp.kron(mag_x, identity, format='csr')
     for _ in range(max_size * 2):
         mag_2x = sp.kron(mag_2x, identity, format='csr')
-
-    for cluster_number in range(len(clusters)):
+    n_clusters = len(clusters)
+    per = 0.1
+    for cluster_number in range(n_clusters):
         Cluster_H = get_hamiltonian(mf_positions, cluster_number, clusters, states, H_center, H_dict)
         # start_time_tp = time.time_ns()
         matrix_exp = get_time_propagator(Cluster_H, tau)
@@ -286,7 +279,7 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
 
         if len(positions) == max_size:
             magx = mag_x
-        elif len(positions) == (max_size*2):
+        elif len(positions) == (max_size * 2):
             magx = mag_2x
         else:
             # print("generating new magx")
@@ -301,8 +294,11 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
             matrix_exp_step = matrix_exp_step.dot(matrix_exp)
             prob = get_probabilities(matrix_exp_step, positions, magx, num_states)
             all_probs[current_step, cluster_number] = prob
+        if cluster_number >= (per * n_clusters) or cluster_number == n_clusters - 1:
+            rank = comm.Get_rank()
+            print(f"CPU {rank} calculating cluster {cluster_number + 1} of {n_clusters}, {round(per * 100)}% done")
+            per += 0.1
     t = t_step
     time_prob = [[t + i * t_step, np.prod(element)] for i, element in enumerate(all_probs)]
     time_prob = np.stack(time_prob, axis=0)
     return time_prob, all_probs
-
