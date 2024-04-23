@@ -34,7 +34,7 @@ There are two ways to configure simulation parameters:
 1. **Command-Line Arguments**: You can directly pass simulation parameters when running the script. This method is suitable for quickly changing parameters without modifying the code. For example:
 
 ```bash
-python main.py --no_systems 10 --number_atoms 100 --t_max 2000 --number_interlaced 5 --max_size 20 --min_size 1 --base_concentrations [1e-6, 2e-6] --thickness 5 --r_dipole 3 --time_step 50 --gamma_b 4 --hf_for_P1 1
+python main.py --no_systems 10 --number_atoms 100 --t_max 2000 --number_interlaced 5 --max_size 20 --min_size 1 --concentration 1e-6 --thickness 5 --r_dipole 3 --time_step 50 --gamma_b 4 --hf_for_P1 1
 ```
 The available command-line arguments include:
 
@@ -52,7 +52,7 @@ The available command-line arguments include:
 
 --number_interlaced: Number of interlaced simulations.
 
---base_concentrations: Base concentrations, specify multiple values separated by spaces.
+--concentration: Concentration.
 
 --thickness: Layer thickness of the spin distribution.
 
@@ -75,7 +75,7 @@ number_systems = 1                    # Number of systems considered. Each syste
 t_max = 500                           # Maximum time in µs
 number_internal_avg = 20              # Number of averages performed internally (Monte Carlo bath state sampling)
 number_spins = 144                    # Total number of bath-spins included in the calculation       
-base_concentrations = [1e-6, 2e-6]    # List of concentrations (Fraction of atoms replaced by defects)
+concentration = 1e-6                  # Concentration (Fraction of atoms replaced by defects)
 thickness = 240                       # Diamond-layer thickness along the z-direction in nm. The central spin is positioned at the center of the layer.
 usp_flag = 0                          # Set usp_flag=1 to simulate P1-centers, usp_flag=0 to simulate electron spins in the bath.
 gamma_b = 28000                       # Gyromagnetic ratio of the bath spins in MHz/T. Default is for electron spins.
@@ -84,7 +84,7 @@ r_dipole = 45                         # Dipole-radius of the bathspins defining 
 Ensure input.py is in the same directory as the main script.
 
 ## Collaboration
-This project is a collaborative effort, and contributions are welcome. To participate or inquire, please contact the project team.
+This project is a collaborative effort and contributions are welcome. To participate or inquire, please contact the project team.
 
 ## Acknowledgments
 We thank Mrunal Divecha for helping with restructuring and optimizing the code. 
