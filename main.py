@@ -73,7 +73,6 @@ if __name__ == '__main__':
     print("Starting simulation....")
 
     results = []
-    # Adjust time factor based on thickness
 
     # Debugging print statement
     print(size, rank, concentration, thickness)
