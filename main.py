@@ -74,7 +74,6 @@ if __name__ == '__main__':
 
     results = []
     # Adjust time factor based on thickness
-    t_factor = 150 / thickness if thickness < 150 else 1
 
     # Debugging print statement
     print(size, rank, concentration, thickness)
