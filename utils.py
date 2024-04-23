@@ -63,10 +63,12 @@ def build_lattice(concentration, number_spins, thickness, r_dipole):
 
     # create random lattice sites
 
-    size_factor = (10 ** -6 / concentration) ** (1 / 3) * (120 / thickness) ** (1 / 2)
+    size_factor = (10 ** -6 / concentration) ** (1 / 3) 
+    if thickness < 120*(10 ** -6 / concentration) ** (1 / 3):
+        size_factor = size_factor * (120*(10 ** -6 / concentration) ** (1 / 3) / thickness) ** (1 / 2)
     iterations_x = int(500 * size_factor)
     iterations_y = int(500 * size_factor)
-    iterations_z = min(np.round(thickness / 2 / 0.3567), iterations_x)
+    iterations_z = int(500 * size_factor)
 
     number_atoms = 8 * 8 * iterations_x * iterations_y * iterations_z
     number_N = int(concentration * number_atoms)
