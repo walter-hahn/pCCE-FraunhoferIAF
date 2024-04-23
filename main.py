@@ -27,7 +27,7 @@ def get_command_line_args():
     parser.add_argument("--number_atoms", type=int, help="Number of atoms in a system", default=number_spins)
     parser.add_argument("--number_interlaced", type=int, help="Number of interlaced simulations",
                         default=number_internal_avg)
-    parser.add_argument("--base_concentrations", nargs='+', type=float, help="Base concentrations", default=concentration)
+    parser.add_argument("--concentration", type=float, help="Concentration", default=concentration)
     parser.add_argument("--thickness", type=int, help="Layer thickness of the spin distribution", default=thickness)
     parser.add_argument("--r_dipole", type=int, help="Dipole weight", default=r_dipole)
     parser.add_argument("--time_step", type=int, help="Time step(ms)", default=time_step)
@@ -48,7 +48,7 @@ if args.info:
     print("  --t_max: Maximum time for simulation (default: {})".format(t_max))
     print("  --number_atoms: Number of atoms in a system (default: {})".format(number_spins))
     print("  --number_interlaced: Number of interlaced simulations (default: {})".format(number_internal_avg))
-    print("  --base_concentrations: Base concentrations (default: {})".format(concentration))
+    print("  --concentration: Concentration (default: {})".format(concentration))
     print("  --thickness: Layer thickness of the spin distribution (default: {})".format(thickness))
     print("  --r_dipole: Dipole weight (default: {})".format(r_dipole))
     print("  --time_step: Time step(ms) (default: {})".format(time_step))
