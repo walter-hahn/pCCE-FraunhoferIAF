@@ -25,7 +25,7 @@ def get_command_line_args():
     parser.add_argument("--number_systems", type=int, help="Number of systems", default=number_systems)
     parser.add_argument("--t_max", type=int, help="Maximum time for simulation", default=t_max)
     parser.add_argument("--number_spins", type=int, help="Number of atoms in a system", default=number_spins)
-    parser.add_argument("--number_interlaced", type=int, help="Number of interlaced simulations",
+    parser.add_argument("--number_internal_avg", type=int, help="Number of interlaced simulations",
                         default=number_internal_avg)
     parser.add_argument("--concentration", type=float, help="Concentration", default=concentration)
     parser.add_argument("--thickness", type=int, help="Layer thickness of the spin distribution", default=thickness)
@@ -47,7 +47,7 @@ if args.info:
     print("  --number_systems: Number of systems (default: {})".format(number_systems))
     print("  --t_max: Maximum time for simulation (default: {})".format(t_max))
     print("  --number_spins: Number of atoms in a system (default: {})".format(number_spins))
-    print("  --number_interlaced: Number of interlaced simulations (default: {})".format(number_internal_avg))
+    print("  --number_internal_avg: Number of interlaced simulations (default: {})".format(number_internal_avg))
     print("  --concentration: Concentration (default: {})".format(concentration))
     print("  --thickness: Layer thickness of the spin distribution (default: {})".format(thickness))
     print("  --r_dipole: Dipole weight (default: {})".format(r_dipole))
