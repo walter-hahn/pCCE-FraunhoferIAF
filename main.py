@@ -20,8 +20,8 @@ def get_command_line_args():
     parser = argparse.ArgumentParser(description="Simulation Parameters")
     # Define arguments for each configurable parameter, matching those in input.py and constants.py
     parser.add_argument("--info", action="store_true", help="Display information about input methods")
-    parser.add_argument("--max_size", type=int, help="Maximum cluster size", default=max_part_size)
-    parser.add_argument("--min_size", type=int, help="Minimum cluster size", default=min_part_size)
+    parser.add_argument("--max_part_size", type=int, help="Maximum cluster size", default=max_part_size)
+    parser.add_argument("--min_part_size", type=int, help="Minimum cluster size", default=min_part_size)
     parser.add_argument("--no_systems", type=int, help="Number of systems", default=number_systems)
     parser.add_argument("--t_max", type=int, help="Maximum time for simulation", default=t_max)
     parser.add_argument("--number_atoms", type=int, help="Number of atoms in a system", default=number_spins)
@@ -42,8 +42,8 @@ args = get_command_line_args()
 # use the default value if not specified by the user
 if args.info:
     print("Simulation Parameters:")
-    print("  --max_size: Maximum cluster size (default: {})".format(max_part_size))
-    print("  --min_size: Minimum cluster size (default: {})".format(min_part_size))
+    print("  --max_part_size: Maximum cluster size (default: {})".format(max_part_size))
+    print("  --min_part_size: Minimum cluster size (default: {})".format(min_part_size))
     print("  --no_systems: Number of systems (default: {})".format(number_systems))
     print("  --t_max: Maximum time for simulation (default: {})".format(t_max))
     print("  --number_atoms: Number of atoms in a system (default: {})".format(number_spins))
