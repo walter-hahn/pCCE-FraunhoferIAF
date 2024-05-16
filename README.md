@@ -39,6 +39,7 @@ max_part_size = 4                     # Maximum partition size
 min_part_size = 4                     # Minimum partition size
 number_systems = 1                    # Number of systems considered. Each system corresponds to a random spatial distribution of spins. MPI parallelization distributes theses systems among available cores.
 t_max = 500                           # Maximum time in µs
+time_step = 50                        # Number of time steps to calculate until t_max
 number_internal_avg = 20              # Number of averages performed internally (Monte Carlo bath state sampling)
 number_spins = 144                    # Total number of bath-spins included in the calculation       
 concentration = 1e-6                  # Concentration (Fraction of atoms replaced by defects)
@@ -56,7 +57,7 @@ Ensure input.py is in the same directory as the main script.
 python main.py --no_systems 10 --number_atoms 100 --t_max 2000 --number_interlaced 5 --max_size 20 --min_size 1 --concentration 1e-6 --thickness 5 --r_dipole 3 --time_step 50 --gamma_b 4 --hf_for_P1 1
 ```
 The available command-line arguments are:
---info, --max_size, --min_size, --no_systems, --t_max, --number_atoms, --number_interlaced, --concentration, --thickness, --r_dipole, --time_step, --gamma_b, --hf_for_P1
+--info, --max_part_size, --min_part_size, --no_systems, --t_max, --number_atoms, --number_interlaced, --concentration, --thickness, --r_dipole, --time_step, --gamma_b, --hf_for_P1
 
 ## Collaboration
 This project is a collaborative effort and contributions are welcome. To participate or inquire, please contact the project team.
