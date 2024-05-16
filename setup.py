@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="pCCE",
-    version="0.5",
-    description="A simulation of quantum spin dynamics focusing on the Hahn echo problem.",
+    version="0.64",
+    description="Calculation of the spin-coherence decay for quantum central-spin problems with focus on the Hahn echo problem.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/IAmMrunal/pCCE/tree/dev",  # Replace with the actual URL
+    url="https://github.com/walter-hahn/pCCE-FraunhoferIAF",  # Replace with the actual URL
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
