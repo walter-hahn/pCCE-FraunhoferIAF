@@ -174,7 +174,7 @@ def time_propagation(matrix_exp, psi0):
     return psi_tau
 
 
-def get_probabilities(matrix_exp_step, positions, magx, num_states, testing=0):
+def get_Hahn_echo_results(matrix_exp_step, positions, magx, num_states, testing=0):
     """
     Calculates the average probability of quantum state evolution under a given matrix.
 
@@ -230,7 +230,7 @@ def get_probabilities(matrix_exp_step, positions, magx, num_states, testing=0):
     return np.mean(prob)
 
 
-def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict, test=0):
+def get_results(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict, test=0):
     """
         Solves the Hahn echo problem for a system of spins.
 
@@ -292,7 +292,7 @@ def solve_hahn(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict,
         for t in np.linspace(t_step * 2, t_max, n_steps - 1):
             current_step += 1
             matrix_exp_step = matrix_exp_step.dot(matrix_exp)
-            prob = get_probabilities(matrix_exp_step, positions, magx, num_states)
+            prob = get_Hahn_echo_results(matrix_exp_step, positions, magx, num_states)
             all_probs[current_step, cluster_number] = prob
         if cluster_number >= (per * n_clusters) or cluster_number == n_clusters - 1:
             rank = comm.Get_rank()
