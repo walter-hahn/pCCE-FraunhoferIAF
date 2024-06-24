@@ -230,7 +230,7 @@ def get_Hahn_echo_results(matrix_exp_step, positions, magx, num_states, testing=
     return np.mean(prob)
 
 
-def get_results(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict, test=0):
+def get_pulse_results(mf_positions, t_max, n_steps, clusters, states, H_center, H_dict, test=0):
     """
         Solves the Hahn echo problem for a system of spins.
 
