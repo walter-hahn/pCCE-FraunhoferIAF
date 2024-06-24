@@ -2,7 +2,7 @@ import time
 import argparse
 from mpi4py import MPI
 from utils import build_lattice, constrained_clustering, mf_bath, get_time_prob
-from solve_hahn import solve_hahn
+from solve_hahn import get_pulse_results
 from data_manager import save_result_data
 from constants import *
 import matplotlib.pyplot as plt
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 # Generate magnetic field and Hamiltonian for the system
                 states, H_center, H_dict = mf_bath(all_positions, mf_positions)  # system is always 0
                 # Solve the Hahn echo problem
-                time_prob, all_probs = solve_hahn(mf_positions, t_max, time_step, clusters, states, H_center, H_dict)
+                time_prob, all_probs = get_pulse_results(mf_positions, t_max, time_step, clusters, states, H_center, H_dict)
 
                 # Accumulate probabilities
                 if j == 0:
